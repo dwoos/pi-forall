@@ -108,11 +108,15 @@ tcTerm (TyUnit) Nothing = return (TyUnit, Type)
 
 tcTerm (LitUnit) Nothing = return (LitUnit, TyUnit)
 
-tcTerm (TyBool) Nothing = err [DS "unimplemented"]
+tcTerm (TyBool) Nothing = return (TyBool, Type)
   
-tcTerm (LitBool b) Nothing = err [DS "unimplemented"]
+tcTerm (LitBool b) Nothing = return (LitBool b, TyBool)
   
-tcTerm t@(If t1 t2 t3 ann1) ann2 = err [DS "unimplemented"]      
+tcTerm t@(If t1 t2 t3 ann1) ann2 = do
+  (at1, ty1) <- checkType t1 TyBool
+  (at2, ty2) <- tcTerm t2 ann2
+  (at3, ty3) <- checkType t3 ty2
+  return (t, ty3)
   
 tcTerm (Let bnd) ann =   err [DS "unimplemented"]        
 
